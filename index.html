@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Observation Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="text-slate-800 h-screen overflow-hidden flex flex-col">
+
+    <div id="login-view" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900">
+        <div class="absolute inset-0 bg-cover bg-center opacity-40" style="background-image: url('https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');"></div>
+        
+        <div class="relative bg-white p-10 rounded-3xl shadow-2xl w-full max-w-md mx-4 fade-in">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-600 text-white mb-4 shadow-lg shadow-blue-200">
+                    <i class="fas fa-atom text-3xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-slate-900">AI Observer</h1>
+                <p class="text-slate-500 text-sm mt-2">Professional Teaching Analytics</p>
+            </div>
+
+            <form id="login-form" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Work Email</label>
+                    <input type="email" id="login-email" value="meena@school.edu" class="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="name@school.edu" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Password</label>
+                    <input type="password" value="password123" class="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="••••••••" required>
+                </div>
+                
+                <button type="submit" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-200 transition-all transform active:scale-95 flex justify-center items-center gap-2">
+                    <span>Access Dashboard</span>
+                    <i class="fas fa-arrow-right text-sm"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="app-layout" class="hidden flex h-full relative">
+        
+        <div id="mobile-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/60 z-20 hidden lg:hidden backdrop-blur-sm"></div>
+
+        <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-white border-r border-slate-200 flex flex-col z-30 transform -translate-x-full lg:translate-x-0 shadow-xl lg:shadow-none">
+            <div class="h-20 flex items-center px-8 border-b border-slate-100 justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-md">
+                        <i class="fas fa-atom text-sm"></i>
+                    </div>
+                    <span class="font-bold text-lg text-slate-800">Observer AI</span>
+                </div>
+                <button onclick="toggleSidebar()" class="lg:hidden text-slate-400"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
+                <button onclick="navigate('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center px-4 py-3.5 text-sm font-medium text-slate-600 rounded-xl hover:bg-slate-50 transition-colors">
+                    <i class="fas fa-th-large w-6"></i> Dashboard
+                </button>
+                <button onclick="navigate('profile')" id="nav-profile" class="nav-item w-full flex items-center px-4 py-3.5 text-sm font-medium text-slate-600 rounded-xl hover:bg-slate-50 transition-colors">
+                    <i class="fas fa-user-circle w-6"></i> Teacher Profile
+                </button>
+                <button onclick="navigate('careers')" id="nav-careers" class="nav-item w-full flex items-center px-4 py-3.5 text-sm font-medium text-slate-600 rounded-xl hover:bg-slate-50 transition-colors">
+                    <i class="fas fa-briefcase w-6"></i> Career Paths
+                </button>
+                
+                <div class="pt-8">
+                    <p class="px-4 text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Support</p>
+                    <button onclick="toggleChat()" class="w-full flex items-center px-4 py-3.5 text-sm font-medium text-slate-600 rounded-xl hover:bg-slate-50 transition-colors">
+                        <i class="fas fa-comment-dots w-6"></i> AI Assistant
+                    </button>
+                    <button class="w-full flex items-center px-4 py-3.5 text-sm font-medium text-slate-600 rounded-xl hover:bg-slate-50 transition-colors">
+                        <i class="fas fa-cog w-6"></i> Settings
+                    </button>
+                </div>
+            </nav>
+            
+            <div class="p-6 border-t border-slate-100">
+                <button onclick="logout()" class="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-colors">
+                    <i class="fas fa-power-off mr-2"></i> Sign Out
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 lg:ml-72 flex flex-col h-full bg-slate-50">
+            
+            <header class="glass-header sticky top-0 z-20 h-20 flex items-center justify-between px-6 lg:px-10">
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-500 hover:bg-slate-100 rounded-lg"><i class="fas fa-bars text-xl"></i></button>
+                    <h2 id="page-title" class="text-xl font-bold text-slate-800">Dashboard Overview</h2>
+                </div>
+                
+                <div class="flex items-center gap-5">
+                    <div class="hidden md:flex items-center gap-2 text-sm text-slate-500 bg-white px-3 py-1.5 rounded-full border border-slate-200">
+                        <span class="w-2 h-2 rounded-full bg-green-500"></span> System Online
+                    </div>
+                    <button onclick="triggerAnalysis()" class="hidden sm:flex bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition shadow-lg shadow-blue-200 items-center gap-2">
+                        <i class="fas fa-plus"></i> <span>New Observation</span>
+                    </button>
+                    <div onclick="navigate('profile')" class="h-10 w-10 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-md cursor-pointer ring-2 ring-white">
+                        <span id="header-avatar">M</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="flex-1 overflow-y-auto p-6 lg:p-10 scroll-smooth">
+                
+                <div id="view-dashboard" class="space-y-8 fade-in">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden group">
+                            <div class="absolute right-0 top-0 w-24 h-24 bg-blue-50 rounded-bl-full -mr-4 -mt-4 transition group-hover:scale-110"></div>
+                            <dt class="text-sm font-semibold text-slate-500 relative z-10">Total Sessions</dt>
+                            <dd class="text-3xl font-bold text-slate-800 mt-2 relative z-10">24</dd>
+                            <div class="mt-4 text-xs font-medium text-green-600 flex items-center bg-green-50 w-fit px-2 py-1 rounded">
+                                <i class="fas fa-arrow-trend-up mr-1"></i> +12% vs last month
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden group">
+                            <div class="absolute right-0 top-0 w-24 h-24 bg-indigo-50 rounded-bl-full -mr-4 -mt-4 transition group-hover:scale-110"></div>
+                            <dt class="text-sm font-semibold text-slate-500 relative z-10">Engagement Score</dt>
+                            <dd class="text-3xl font-bold text-indigo-600 mt-2 relative z-10">88%</dd>
+                            <div class="w-full bg-slate-100 rounded-full h-1.5 mt-4">
+                                <div class="bg-indigo-600 h-1.5 rounded-full" style="width: 88%"></div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden group">
+                            <div class="absolute right-0 top-0 w-24 h-24 bg-amber-50 rounded-bl-full -mr-4 -mt-4 transition group-hover:scale-110"></div>
+                            <dt class="text-sm font-semibold text-slate-500 relative z-10">Growth Area</dt>
+                            <dd class="text-2xl font-bold text-amber-500 mt-2 relative z-10">Pacing</dd>
+                            <p class="text-xs text-slate-400 mt-4">Detected fast speech in recent clips</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                            <div class="px-6 py-5 border-b border-slate-50 flex justify-between items-center">
+                                <h3 class="font-bold text-slate-800">Recent Analysis Reports</h3>
+                                <button class="text-xs text-blue-600 font-medium hover:underline">View All</button>
+                            </div>
+                            <ul id="report-list" class="divide-y divide-slate-50">
+                                </ul>
+                        </div>
+
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden h-fit">
+                            <div class="px-6 py-5 border-b border-slate-50">
+                                <h3 class="font-bold text-slate-800">Quick Upload</h3>
+                            </div>
+                            <div class="p-6">
+                                <div onclick="triggerAnalysis()" class="drop-zone border-2 border-dashed border-slate-300 rounded-xl p-8 text-center cursor-pointer transition-all">
+                                    <div id="upload-content">
+                                        <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                            <i class="fas fa-cloud-arrow-up text-xl"></i>
+                                        </div>
+                                        <h4 class="text-slate-900 font-medium text-sm">Upload Class Recording</h4>
+                                        <p class="text-xs text-slate-500 mt-1">MP4, MP3, WAV (Max 50MB)</p>
+                                    </div>
+                                    <div id="loading-spinner" class="hidden flex-col items-center justify-center py-2">
+                                        <div class="loader mb-4"></div>
+                                        <p class="text-slate-800 font-medium text-sm">Analyzing Audio...</p>
+                                        <p class="text-xs text-slate-500 mt-1">Processing tone & clarity</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-profile" class="hidden fade-in space-y-8 pb-12">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden relative">
+                        <div class="h-40 bg-gradient-to-r from-slate-800 to-slate-900"></div>
+                        <div class="px-8 pb-8">
+                            <div class="flex flex-col sm:flex-row items-start sm:items-end -mt-12 mb-6 gap-6">
+                                <div class="h-28 w-28 rounded-2xl border-4 border-white bg-white shadow-lg flex items-center justify-center overflow-hidden">
+                                    <span id="profile-initials" class="text-4xl font-bold text-slate-700">M</span>
+                                </div>
+                                <div class="flex-1 pt-2 sm:pt-0 sm:pb-1">
+                                    <h1 id="disp-name" class="text-3xl font-bold text-slate-900">Meena Sharma</h1>
+                                    <p id="disp-role" class="text-slate-500 font-medium">Senior Science Teacher</p>
+                                </div>
+                                <button onclick="toggleEditMode()" id="edit-btn" class="mb-2 bg-white border border-slate-200 text-slate-700 px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-50 shadow-sm transition">
+                                    Edit Profile
+                                </button>
+                            </div>
+
+                            <div id="profile-display" class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                                <div class="lg:col-span-2 space-y-8">
+                                    <div>
+                                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">About</h4>
+                                        <p id="disp-bio" class="text-slate-600 leading-relaxed">
+                                            Passionate educator.
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Specializations</h4>
+                                        <div id="disp-tags" class="flex flex-wrap gap-2"></div>
+                                    </div>
+                                </div>
+                                <div class="space-y-6">
+                                    <div class="bg-slate-50 rounded-xl p-6 border border-slate-100">
+                                        <h4 class="text-sm font-bold text-slate-800 mb-4">Contact Details</h4>
+                                        <div class="space-y-4">
+                                            <div class="flex items-center text-sm text-slate-600 gap-3">
+                                                <i class="fas fa-envelope text-slate-400 w-5"></i>
+                                                <span id="disp-email" class="truncate">email@school.edu</span>
+                                            </div>
+                                            <div class="flex items-center text-sm text-slate-600 gap-3">
+                                                <i class="fas fa-phone text-slate-400 w-5"></i>
+                                                <span id="disp-phone">+1 123 456 7890</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <form id="profile-edit" class="hidden grid grid-cols-1 gap-6 max-w-2xl mt-6" onsubmit="saveProfile(event)">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-2">Full Name</label>
+                                        <input type="text" id="in-name" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-2">Job Title</label>
+                                        <input type="text" id="in-role" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-2">Subjects (Comma separated)</label>
+                                    <input type="text" id="in-subjects" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Math, Science, Physics">
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-2">Email (Locked)</label>
+                                        <input type="text" id="in-email" disabled class="w-full px-4 py-2.5 border border-slate-200 bg-slate-50 text-slate-400 rounded-xl cursor-not-allowed">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-2">Phone</label>
+                                        <input type="text" id="in-phone" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-2">Bio</label>
+                                    <textarea id="in-bio" rows="4" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                                </div>
+                                <div class="flex gap-3 pt-4">
+                                    <button type="button" onclick="toggleEditMode()" class="px-6 py-2.5 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 font-medium transition">Cancel</button>
+                                    <button type="submit" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-medium shadow-md transition">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-careers" class="hidden fade-in space-y-8">
+                    <div class="bg-slate-900 rounded-2xl p-8 text-white shadow-xl relative overflow-hidden">
+                        <div class="relative z-10 max-w-2xl">
+                            <h2 class="text-2xl font-bold mb-3">Tailored Career Opportunities</h2>
+                            <p class="text-slate-300 leading-relaxed">
+                                Our AI has analyzed your profile keywords: <strong id="career-keywords" class="text-white border-b border-blue-500">Science</strong>.
+                                Below are opportunities that match your teaching style and expertise.
+                            </p>
+                        </div>
+                        <div class="absolute right-0 bottom-0 opacity-10 transform translate-x-1/4 translate-y-1/4">
+                            <i class="fas fa-compass text-9xl"></i>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" id="career-grid">
+                        </div>
+                </div>
+
+            </div>
+        </main>
+
+        <div class="fixed bottom-6 right-6 z-40 flex flex-col items-end">
+            <div id="chat-window" class="bg-white w-80 sm:w-96 h-[500px] rounded-2xl shadow-2xl border border-slate-100 flex flex-col mb-4 transform scale-0 opacity-0 origin-bottom-right hidden">
+                <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-blue-600 rounded-t-2xl">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center text-white">
+                            <i class="fas fa-robot text-sm"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-bold text-sm">AI Assistant</h4>
+                            <p class="text-blue-100 text-xs">Online</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleChat()" class="text-white/70 hover:text-white"><i class="fas fa-times"></i></button>
+                </div>
+                <div id="chat-messages" class="flex-1 overflow-y-auto p-4 flex flex-col gap-2 bg-slate-50">
+                    <div class="chat-msg chat-ai">
+                        Hello! I am your AI teaching assistant. How can I help you improve your class today?
+                    </div>
+                </div>
+                <div class="p-3 bg-white border-t border-slate-100 rounded-b-2xl">
+                    <form onsubmit="handleChat(event)" class="flex gap-2">
+                        <input type="text" id="chat-input" class="flex-1 bg-slate-50 border-0 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-blue-100 outline-none" placeholder="Type a message...">
+                        <button type="submit" class="bg-blue-600 text-white w-10 h-10 rounded-xl flex items-center justify-center hover:bg-blue-700 transition">
+                            <i class="fas fa-paper-plane text-sm"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <button onclick="toggleChat()" class="w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg shadow-blue-200 flex items-center justify-center transition-transform hover:scale-105 active:scale-95">
+                <i class="fas fa-comment-alt text-xl"></i>
+            </button>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
